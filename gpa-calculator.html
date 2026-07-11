@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPA Calculator – Free Weighted GPA & Cumulative GPA Tool | StudyMetrics</title>
+<meta name="description" content="Free GPA calculator. Enter your courses, credits, and grades to calculate your semester GPA, and blend in your previous cumulative GPA. Instant, private, no sign-up.">
+<link rel="canonical" href="https://studymetrics.app/gpa-calculator.html">
+<meta property="og:title" content="GPA Calculator – StudyMetrics">
+<meta property="og:description" content="Calculate your semester and cumulative GPA in seconds. Free and private.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "StudyMetrics GPA Calculator",
+  "applicationCategory": "EducationApplication",
+  "operatingSystem": "Any (runs in browser)",
+  "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
+  "description": "Free browser-based GPA calculator supporting weighted semester GPA and cumulative GPA blending."
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type":"Question","name":"How is GPA calculated?",
+     "acceptedAnswer":{"@type":"Answer","text":"Each letter grade is converted to grade points (A=4.0 down to F=0.0), multiplied by that course's credit hours, then all courses are summed and divided by total credit hours — a credit-weighted average, not a simple average of grades."}},
+    {"@type":"Question","name":"What happens to pass/fail or audited courses?",
+     "acceptedAnswer":{"@type":"Answer","text":"Courses with no letter grade or zero credit hours are automatically excluded from the GPA calculation, since they don't factor into a standard weighted GPA."}}
+  ]
+}
+</script>
+<style>
+  :root{
+    --paper:#FFFDF7; --paper-light:#FFFFFF; --ink:#2B2640; --ink-soft:#635C7A;
+    --accent:#FF6B4A; --accent2:#2CA6A4; --graphite:#8B84A0; --border:rgba(43,38,64,0.12);
+    --display:'Poppins', -apple-system, sans-serif;
+    --sans:'Inter', -apple-system, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;color:var(--ink);font-family:var(--sans);line-height:1.55;
+    background-color:var(--paper);
+    background-image:linear-gradient(rgba(43,38,64,0.05) 1px, transparent 1px);
+    background-size:100% 32px;
+  }
+  a{color:inherit;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
+
+  header.site{border-bottom:1px solid var(--border);background:rgba(255,253,247,0.92);backdrop-filter:blur(6px);position:sticky;top:0;z-index:50;}
+  .site-nav{display:flex;align-items:center;justify-content:space-between;padding:16px 0;}
+  .brand{font-family:var(--display);font-weight:700;font-size:1.25rem;text-decoration:none;color:var(--ink);}
+  .brand span{color:var(--accent);}
+  nav.tools-nav{display:flex;gap:24px;font-size:0.85rem;font-weight:500;}
+  nav.tools-nav a{text-decoration:none;color:var(--ink-soft);}
+  nav.tools-nav a:hover{color:var(--accent);}
+  nav.tools-nav a.active{color:var(--accent);}
+
+  .page-head{padding:38px 0 6px;}
+  .eyebrow{font-family:var(--display);font-weight:600;text-transform:uppercase;letter-spacing:0.06em;font-size:0.76rem;color:var(--accent);margin-bottom:10px;}
+  h1{font-family:var(--display);font-size:clamp(1.7rem,3.4vw,2.3rem);font-weight:700;margin:0 0 10px;}
+  .lede{color:var(--ink-soft);max-width:70ch;margin:0 0 24px;}
+
+  .panel{background:var(--paper-light);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:20px;}
+  .panel h2{font-family:var(--display);font-size:1.1rem;font-weight:700;margin:0 0 6px;}
+  .panel .hint{color:var(--ink-soft);font-size:0.88rem;margin:0 0 16px;}
+
+  .prev-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .field label{display:block;font-family:var(--display);font-weight:600;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.04em;color:var(--graphite);margin-bottom:6px;}
+  .field input{width:100%;padding:10px 12px;border:2px solid var(--border);border-radius:8px;font-family:var(--sans);font-size:0.95rem;color:var(--ink);background:var(--paper);}
+  .field input:focus{outline:none;border-color:var(--accent);}
+
+  .course-row{
+    display:grid;grid-template-columns:1fr 90px 110px 32px;gap:10px;align-items:end;margin-bottom:10px;
+  }
+  .course-row .field{margin:0;}
+  .course-row select{width:100%;padding:10px 12px;border:2px solid var(--border);border-radius:8px;font-family:var(--sans);font-size:0.95rem;color:var(--ink);background:var(--paper);}
+  .col-label{display:grid;grid-template-columns:1fr 90px 110px 32px;gap:10px;font-family:var(--display);font-weight:600;font-size:0.68rem;text-transform:uppercase;letter-spacing:0.04em;color:var(--graphite);margin-bottom:8px;}
+  .remove-course-btn{background:none;border:none;color:var(--graphite);cursor:pointer;font-size:1.2rem;padding:8px;}
+  .remove-course-btn:hover{color:#c0392b;}
+  .add-course-btn{
+    font-family:var(--display);font-weight:600;font-size:0.85rem;background:none;border:2px dashed var(--border);
+    border-radius:10px;padding:12px;width:100%;color:var(--accent);cursor:pointer;margin-top:6px;
+  }
+  .add-course-btn:hover{border-color:var(--accent);}
+
+  .result-panel{background:var(--ink);color:#fff;text-align:center;padding:32px;}
+  .result-panel .gpa-big{font-family:var(--display);font-weight:700;font-size:3.2rem;line-height:1;}
+  .result-panel .gpa-label{font-family:var(--display);font-weight:600;text-transform:uppercase;letter-spacing:0.06em;font-size:0.78rem;color:var(--accent);margin-bottom:8px;}
+  .result-panel .gpa-meta{font-size:0.88rem;color:rgba(255,255,255,0.7);margin-top:10px;}
+
+  .scale-toggle{display:flex;gap:8px;margin-bottom:16px;}
+  .toggle-btn{font-family:var(--display);font-weight:600;font-size:0.82rem;padding:8px 16px;border-radius:18px;border:2px solid var(--border);background:var(--paper-light);color:var(--ink-soft);cursor:pointer;}
+  .toggle-btn.active{background:var(--accent2);color:#fff;border-color:var(--accent2);}
+
+  section.reference{padding:8px 0 56px;}
+  .section-head h2{font-family:var(--display);font-size:1.4rem;font-weight:700;margin:0 0 10px;}
+  .section-head p{color:var(--ink-soft);max-width:70ch;}
+  table.ref-table{width:100%;border-collapse:collapse;font-size:0.92rem;margin-top:16px;}
+  table.ref-table th{text-align:left;font-family:var(--display);font-weight:600;text-transform:uppercase;font-size:0.68rem;letter-spacing:0.04em;color:var(--graphite);border-bottom:1px solid var(--border);padding:10px 12px;}
+  table.ref-table td{padding:10px 12px;border-bottom:1px dashed var(--border);color:var(--ink-soft);}
+  table.ref-table td:first-child{font-weight:600;color:var(--ink);}
+
+  section.faq{padding:8px 0 72px;}
+  details{border-bottom:1px solid var(--border);padding:16px 0;}
+  summary{font-family:var(--display);font-size:1rem;font-weight:600;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;}
+  summary::-webkit-details-marker{display:none;}
+  summary::after{content:'+';color:var(--accent);font-size:1.2rem;font-weight:700;}
+  details[open] summary::after{content:'–';}
+  details p{color:var(--ink-soft);margin:10px 0 0;max-width:66ch;font-size:0.94rem;}
+
+  footer{border-top:1px solid var(--border);padding:26px 0;font-size:0.85rem;color:var(--graphite);}
+  footer .foot-row{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  footer a{text-decoration:none;color:var(--ink-soft);margin-right:16px;}
+  footer a:hover{color:var(--accent);}
+
+  @media(max-width:700px){
+    .course-row, .col-label{grid-template-columns:1fr 70px 90px 28px;}
+    .prev-row{grid-template-columns:1fr;}
+    nav.tools-nav{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap site-nav">
+    <a href="/" class="brand">Study<span>Metrics</span></a>
+    <nav class="tools-nav">
+      <a href="/unit-converter.html">Unit Converter</a>
+      <a href="/gpa-calculator.html" class="active">GPA Calculator</a>
+      <a href="/about.html">About</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap page-head">
+    <div class="eyebrow">GPA Calculator</div>
+    <h1>Calculate your GPA</h1>
+    <p class="lede">Add your courses with credit hours and letter grades. Optionally include your previous cumulative GPA to see your new overall standing.</p>
+  </div>
+
+  <div class="wrap">
+    <div class="panel">
+      <h2>Previous cumulative GPA (optional)</h2>
+      <p class="hint">Leave blank if this is your first semester, or if you only want this semester's GPA.</p>
+      <div class="prev-row">
+        <div class="field"><label for="prevGPA">Previous GPA</label><input type="number" id="prevGPA" step="0.01" min="0" max="4.3" placeholder="3.50"></div>
+        <div class="field"><label for="prevCredits">Previous total credits</label><input type="number" id="prevCredits" step="0.5" min="0" placeholder="60"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>This semester's courses</h2>
+      <div class="col-label"><span>Course name</span><span>Credits</span><span>Grade</span><span></span></div>
+      <div id="courseList"></div>
+      <button class="add-course-btn" id="addCourseBtn" type="button">+ Add course</button>
+    </div>
+
+    <div class="panel result-panel">
+      <div class="gpa-label">Your GPA</div>
+      <div class="gpa-big" id="gpaResult">—</div>
+      <div class="gpa-meta" id="gpaMeta"></div>
+    </div>
+  </div>
+
+  <section class="reference wrap">
+    <div class="section-head">
+      <h2>Grade point scale used</h2>
+      <p>Standard US 4.0 scale. Your school's exact scale may vary slightly — check your registrar's official policy for anything binding.</p>
+    </div>
+    <table class="ref-table">
+      <thead><tr><th>Letter grade</th><th>Grade points</th></tr></thead>
+      <tbody>
+        <tr><td>A / A+</td><td>4.0</td></tr>
+        <tr><td>A-</td><td>3.7</td></tr>
+        <tr><td>B+</td><td>3.3</td></tr>
+        <tr><td>B</td><td>3.0</td></tr>
+        <tr><td>B-</td><td>2.7</td></tr>
+        <tr><td>C+</td><td>2.3</td></tr>
+        <tr><td>C</td><td>2.0</td></tr>
+        <tr><td>C-</td><td>1.7</td></tr>
+        <tr><td>D+</td><td>1.3</td></tr>
+        <tr><td>D</td><td>1.0</td></tr>
+        <tr><td>D-</td><td>0.7</td></tr>
+        <tr><td>F</td><td>0.0</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="faq wrap">
+    <div class="section-head"><h2>Frequently asked questions</h2></div>
+    <details open>
+      <summary>How is GPA calculated?</summary>
+      <p>Each letter grade converts to grade points (A = 4.0 down to F = 0.0). Multiply each course's grade points by its credit hours, add those up across all courses, then divide by total credit hours. It's a credit-weighted average, not a simple average of your grades — a 4-credit A counts more than a 1-credit A.</p>
+    </details>
+    <details>
+      <summary>What happens to pass/fail or audited courses?</summary>
+      <p>Leave the grade blank or set credits to 0 for a course you don't want counted, and it's automatically excluded from the calculation — consistent with how pass/fail and audited courses are typically excluded from a standard GPA.</p>
+    </details>
+    <details>
+      <summary>How does the cumulative GPA blending work?</summary>
+      <p>Your previous GPA and previous total credits are converted back into total quality points (GPA × credits), combined with this semester's quality points and credits, then divided to get your new overall cumulative GPA — the same math your registrar uses.</p>
+    </details>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot-row">
+    <div><a href="/about.html">About</a><a href="/contact.html">Contact</a><a href="/privacy.html">Privacy Policy</a></div>
+    <div>© <span id="yr"></span> StudyMetrics. Nothing you enter ever leaves your browser.</div>
+  </div>
+</footer>
+
+<script>
+document.getElementById('yr').textContent = new Date().getFullYear();
+
+/* ---------- tested pure logic (verified standalone before integration) ---------- */
+const GRADE_POINTS = {
+  'A+': 4.0, 'A': 4.0, 'A-': 3.7,
+  'B+': 3.3, 'B': 3.0, 'B-': 2.7,
+  'C+': 2.3, 'C': 2.0, 'C-': 1.7,
+  'D+': 1.3, 'D': 1.0, 'D-': 0.7,
+  'F': 0.0
+};
+
+function computeGPA(courses){
+  const gradedCourses = courses.filter(c => c.grade && GRADE_POINTS.hasOwnProperty(c.grade) && c.credits > 0);
+  const totalCredits = gradedCourses.reduce((sum, c) => sum + c.credits, 0);
+  if(totalCredits === 0) return { gpa: null, totalCredits: 0, totalQualityPoints: 0 };
+  const totalQualityPoints = gradedCourses.reduce((sum, c) => sum + c.credits * GRADE_POINTS[c.grade], 0);
+  const gpa = totalQualityPoints / totalCredits;
+  return { gpa: Math.round(gpa * 100) / 100, totalCredits, totalQualityPoints: Math.round(totalQualityPoints*100)/100 };
+}
+
+function computeCumulativeGPA(previousGPA, previousCredits, newCourses){
+  const previousQualityPoints = (previousGPA || 0) * (previousCredits || 0);
+  const newResult = computeGPA(newCourses);
+  const combinedCredits = (previousCredits || 0) + newResult.totalCredits;
+  if(combinedCredits === 0) return { gpa: null, totalCredits: 0 };
+  const combinedQualityPoints = previousQualityPoints + newResult.totalQualityPoints;
+  return { gpa: Math.round((combinedQualityPoints / combinedCredits) * 100) / 100, totalCredits: combinedCredits };
+}
+
+/* ---------- state ---------- */
+function uid(){ return 'id' + Math.random().toString(36).slice(2, 10); }
+let courses = [
+  { id: uid(), name: '', credits: 3, grade: 'A' }
+];
+
+/* ---------- rendering ---------- */
+function renderCourseList(){
+  const el = document.getElementById('courseList');
+  el.innerHTML = courses.map(c => `
+    <div class="course-row" data-id="${c.id}">
+      <div class="field"><input data-field="name" data-id="${c.id}" value="${escapeAttr(c.name)}" placeholder="e.g. Calculus I"></div>
+      <div class="field"><input data-field="credits" data-id="${c.id}" type="number" min="0" step="0.5" value="${c.credits}"></div>
+      <div class="field">
+        <select data-field="grade" data-id="${c.id}">
+          <option value="">— none —</option>
+          ${Object.keys(GRADE_POINTS).map(g => `<option value="${g}" ${g===c.grade?'selected':''}>${g}</option>`).join('')}
+        </select>
+      </div>
+      <button class="remove-course-btn" data-action="remove" data-id="${c.id}" type="button" title="Remove">×</button>
+    </div>
+  `).join('');
+}
+function escapeAttr(s){ return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;'); }
+
+function renderResult(){
+  const prevGPA = parseFloat(document.getElementById('prevGPA').value);
+  const prevCredits = parseFloat(document.getElementById('prevCredits').value);
+  const hasPrevious = !isNaN(prevGPA) && !isNaN(prevCredits) && prevCredits > 0;
+
+  const semesterResult = computeGPA(courses);
+  const gpaResultEl = document.getElementById('gpaResult');
+  const gpaMetaEl = document.getElementById('gpaMeta');
+
+  if(hasPrevious){
+    const cumulative = computeCumulativeGPA(prevGPA, prevCredits, courses);
+    gpaResultEl.textContent = cumulative.gpa !== null ? cumulative.gpa.toFixed(2) : '—';
+    const semesterText = semesterResult.gpa !== null ? `This semester: ${semesterResult.gpa.toFixed(2)} (${semesterResult.totalCredits} credits)` : 'Add courses to include this semester';
+    gpaMetaEl.textContent = cumulative.gpa !== null
+      ? `Cumulative over ${cumulative.totalCredits} total credits · ${semesterText}`
+      : 'Add courses or check your previous credits';
+  } else {
+    gpaResultEl.textContent = semesterResult.gpa !== null ? semesterResult.gpa.toFixed(2) : '—';
+    gpaMetaEl.textContent = semesterResult.gpa !== null ? `Based on ${semesterResult.totalCredits} credit hours` : 'Add at least one graded course';
+  }
+}
+
+function renderAll(){ renderCourseList(); renderResult(); }
+
+/* ---------- events ---------- */
+document.getElementById('addCourseBtn').addEventListener('click', () => {
+  courses.push({ id: uid(), name: '', credits: 3, grade: 'A' });
+  renderAll();
+});
+document.getElementById('courseList').addEventListener('input', (e) => {
+  const id = e.target.dataset.id, field = e.target.dataset.field;
+  if(!id || !field) return;
+  const course = courses.find(c => c.id === id);
+  if(!course) return;
+  course[field] = field === 'credits' ? (parseFloat(e.target.value) || 0) : e.target.value;
+  renderResult();
+});
+document.getElementById('courseList').addEventListener('change', (e) => {
+  if(e.target.dataset.field === 'grade'){
+    const course = courses.find(c => c.id === e.target.dataset.id);
+    if(course) course.grade = e.target.value;
+    renderResult();
+  }
+});
+document.getElementById('courseList').addEventListener('click', (e) => {
+  if(e.target.dataset.action === 'remove'){
+    if(courses.length <= 1){
+      courses = [{ id: uid(), name: '', credits: 3, grade: 'A' }];
+    } else {
+      courses = courses.filter(c => c.id !== e.target.dataset.id);
+    }
+    renderAll();
+  }
+});
+document.getElementById('prevGPA').addEventListener('input', renderResult);
+document.getElementById('prevCredits').addEventListener('input', renderResult);
+
+/* ---------- init ---------- */
+renderAll();
+</script>
+</body>
+</html>
